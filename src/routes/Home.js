@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
+import { actionCreators } from "../store";
+import ToDo from "../components/ToDo";
 
-function Home() {
+function Home({ toDos, addToDo }) {
   const [text, setText] = useState("");
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log(text);
+    addToDo(text);
+    setText("");
   };
   const onChange = (e) => {
     setText(e.target.value);
@@ -17,9 +21,22 @@ function Home() {
         <input type="text" value={text} onChange={onChange}></input>
         <button>Add</button>
       </form>
-      <ul></ul>
+      <ul>
+        {toDos.map((toDo) => (
+          <ToDo {...toDo} key={toDo.id} />
+        ))}
+      </ul>
     </>
   );
 }
 
-export default Home;
+function mapStateToProps(state) {
+  //store.getState()와 같은 효과
+  return { toDos: state }; // 가져온 state에 추가할 요소 설정 가능
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    addToDo: (text) => dispatch(actionCreators.addToDo(text)),
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
